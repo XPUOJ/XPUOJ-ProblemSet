@@ -1,0 +1,16 @@
+{
+  "id": 34,
+  "displayId": 18,
+  "type": "Traditional",
+  "isPublic": true,
+  "locales": [
+    "zh_CN"
+  ],
+  "samples": [
+    {
+      "inputData": "input: [[1.0, 2.0, 3.0, 4.0], [0.0, -1.0, 0.5, -0.5]]\nbatch_size: 2\nhidden_size: 2",
+      "outputData": "out: [[2.1933, 7.0464], [0.0, 0.1345]]"
+    }
+  ],
+  "problemTagIds": []
+}

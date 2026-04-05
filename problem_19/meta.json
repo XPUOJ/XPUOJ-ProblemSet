@@ -1,0 +1,16 @@
+{
+  "id": 35,
+  "displayId": 19,
+  "type": "Traditional",
+  "isPublic": true,
+  "locales": [
+    "zh_CN"
+  ],
+  "samples": [
+    {
+      "inputData": "",
+      "outputData": ""
+    }
+  ],
+  "problemTagIds": []
+}
