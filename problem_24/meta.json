@@ -1,0 +1,16 @@
+{
+  "id": 40,
+  "displayId": 24,
+  "type": "Traditional",
+  "isPublic": true,
+  "locales": [
+    "zh_CN"
+  ],
+  "samples": [
+    {
+      "inputData": "input: [[1.0, 2.0], [0.0, -1.0]]\nbatch_size: 2\nhidden_size: 1",
+      "outputData": "out: [[gelu_tanh(1.0)*2.0], [gelu_tanh(0.0)*(-1.0)]]"
+    }
+  ],
+  "problemTagIds": []
+}

@@ -1,1 +1,4 @@
-*.py
+__pycache__
+.kernel_cache
+.triton
+

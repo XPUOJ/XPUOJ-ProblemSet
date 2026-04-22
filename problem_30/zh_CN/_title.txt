@@ -1,0 +1,1 @@
+Conv3d Fprop TF32 SM90
