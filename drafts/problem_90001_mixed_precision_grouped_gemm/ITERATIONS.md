@@ -97,3 +97,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 33.0216, case2 56.9321, case3 46.8157, case4 122.2676, case5 48.1036, case6 30.4022, case7 46.0662.
 - Result: slower than iter 7. Reusing each A value across 64 columns is more valuable than reducing per-thread output/register work.
+
+## Iteration 13
+
+- Change: restored the iter-7 best version, added `cudaMemsetAsync` to zero the whole output, and changed padding rows to return without per-tile zero stores.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 28.7618, case2 48.5171, case3 41.6291, case4 112.6595, case5 37.8021, case6 22.6257, case7 42.9486.
+- Result: slight new best candidate by geometric mean. The memset cost is offset by removing scattered padding zero stores, especially on cases with nontrivial padding.
