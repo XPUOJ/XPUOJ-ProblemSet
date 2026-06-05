@@ -69,3 +69,10 @@
 - Reason: best geometric mean among tested variants. Iteration 8 was worse, so `solution/kernel.cu` was restored from the iter-7 commit and verified again.
 - Final verification: PASS on all 7 cases.
 - Final runtime ms: case1 29.5521, case2 48.5707, case3 41.4841, case4 112.9508, case5 37.9255, case6 22.6913, case7 42.9745.
+
+## Iteration 9
+
+- Change: converted most kernel-internal indexing and loops from `int64_t` to 32-bit `int`, relying on the problem bounds.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 28.8208, case2 49.0392, case3 42.2279, case4 253.8696, case5 36.7183, case6 21.8295, case7 42.9360.
+- Result: rejected. Some cases improved, but case4 regressed badly, so the mixed/address calculation change is not robust as-is.
