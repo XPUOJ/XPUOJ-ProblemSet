@@ -118,3 +118,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 21.5874, case2 35.8673, case3 29.8730, case4 84.2227, case5 28.7433, case6 18.5261, case7 31.2960.
 - Result: new best by a large margin. Skipping mathematically zero contribution blocks removes substantial unpack and multiply-add work while preserving exact semantics.
+
+## Iteration 16
+
+- Change: added a `group_k=64 && K%128==0` no-tail fast path while keeping the generic fallback. The fast path removes `kb>=K`, `min(kb+64,K)`, and `k+1<kend` checks from the hot loop.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 21.6627, case2 34.2306, case3 28.8291, case4 75.0100, case5 25.1227, case6 14.7636, case7 30.2353.
+- Result: new best overall. The no-tail full-128 path substantially reduces loop overhead on the tested large cases.
