@@ -27,3 +27,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 33.7872, case2 59.9280, case3 49.6861, case4 210.3798, case5 64.9992, case6 32.6787, case7 49.4587.
 - Result: slower than baseline. The shared-memory staging and `__syncthreads()` overhead outweighed reduced A loads.
+
+## Iteration 4
+
+- Change: restored the warp-row baseline and added a `group_k=64, K%64==0` fast path that removes tail checks and uses shift-based block indexing.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 31.8344, case2 54.4660, case3 44.9280, case4 212.5309, case5 53.6488, case6 29.4772, case7 47.9669.
+- Result: slower than baseline. The specialized path likely increased unrolling/register pressure enough to lose more than it saved.
