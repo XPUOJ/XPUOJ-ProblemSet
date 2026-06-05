@@ -111,3 +111,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 29.0660, case2 48.3745, case3 41.4074, case4 112.4470, case5 37.4414, case6 22.3569, case7 42.7513.
 - Result: new best overall. Reusing `A_scale` across two `group_k=64` chunks improves most cases with only a small case1 regression.
+
+## Iteration 15
+
+- Change: added zero-scale skipping. If an `A_scale` block is zero, the whole 128-wide A block is skipped. If a `B_scale` block is zero for an output column, that column's INT4 unpack and FMA work for the 64-wide B block is skipped.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 21.5874, case2 35.8673, case3 29.8730, case4 84.2227, case5 28.7433, case6 18.5261, case7 31.2960.
+- Result: new best by a large margin. Skipping mathematically zero contribution blocks removes substantial unpack and multiply-add work while preserving exact semantics.
