@@ -34,3 +34,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 31.8344, case2 54.4660, case3 44.9280, case4 212.5309, case5 53.6488, case6 29.4772, case7 47.9669.
 - Result: slower than baseline. The specialized path likely increased unrolling/register pressure enough to lose more than it saved.
+
+## Iteration 5
+
+- Change: restored the best warp-row implementation and changed `WARPS_PER_BLOCK` from 4 to 8.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 30.9379, case2 49.9755, case3 42.4748, case4 123.1606, case5 41.0047, case6 24.7258, case7 43.7798.
+- Result: new best overall. Larger blocks improved throughput on the large/wide cases while keeping small regressions on case1/case2 modest.
