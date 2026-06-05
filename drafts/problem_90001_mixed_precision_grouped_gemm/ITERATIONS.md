@@ -132,3 +132,10 @@
 - Correctness: not reached.
 - Runtime ms: not available.
 - Result: compile failed because the patch referenced `K_i`, `N_i`, and `num_groups_i` before defining them in the fast-kernel scope. Need to fix the mechanical scoping error before evaluating this idea.
+
+## Iteration 18
+
+- Change: fixed the scoping issue from iter 17 and evaluated 32-bit indexing only inside the `K%128==0` fast path.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 21.2237, case2 34.3207, case3 28.8311, case4 75.3667, case5 25.1581, case6 15.0587, case7 30.2553.
+- Result: rejected. It improves case1, but regresses most other cases versus iter 16. The original 64-bit fast path remains better overall.
