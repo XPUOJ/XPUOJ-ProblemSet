@@ -55,3 +55,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 29.0188, case2 48.5079, case3 41.3999, case4 112.9782, case5 37.9597, case6 22.7165, case7 42.8612.
 - Result: new best overall by geometric mean. Cases 1-6 improved, while the very deep-K case7 regressed slightly.
+
+## Iteration 8
+
+- Change: tested the middle point `WARPS_PER_BLOCK=24`.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 30.0973, case2 50.0225, case3 41.5496, case4 117.2122, case5 41.0749, case6 25.3628, case7 43.6994.
+- Result: worse than iter 7. The 32-warp maximum block remains the best tested configuration.
