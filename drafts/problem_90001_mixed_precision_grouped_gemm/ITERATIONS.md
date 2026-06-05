@@ -13,3 +13,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 42.8951, case2 68.1484, case3 60.2290, case4 143.0584, case5 76.7946, case6 44.6753, case7 55.9514.
 - Result: mostly slower than baseline; only case4 improved slightly. The higher warp count and reduction overhead outweighed the more contiguous K access.
+
+## Iteration 2
+
+- Change: attempted a shared-A row kernel where one block handles one row and 256 output columns, caching each 64-wide K chunk of A in shared memory for reuse across 4 warps.
+- Correctness: not reached.
+- Runtime ms: not available.
+- Result: compile failed because the CUDA device code used `min<int64_t>(...)` in a form nvcc rejected. Need to fix the chunk-size expression before evaluating the idea.
