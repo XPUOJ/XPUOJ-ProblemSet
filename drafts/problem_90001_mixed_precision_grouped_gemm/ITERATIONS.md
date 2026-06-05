@@ -62,3 +62,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 30.0973, case2 50.0225, case3 41.5496, case4 117.2122, case5 41.0749, case6 25.3628, case7 43.6994.
 - Result: worse than iter 7. The 32-warp maximum block remains the best tested configuration.
+
+## Final
+
+- Selected: iteration 7.
+- Reason: best geometric mean among tested variants. Iteration 8 was worse, so `solution/kernel.cu` was restored from the iter-7 commit and verified again.
+- Final verification: PASS on all 7 cases.
+- Final runtime ms: case1 29.5521, case2 48.5707, case3 41.4841, case4 112.9508, case5 37.9255, case6 22.6913, case7 42.9745.
