@@ -90,3 +90,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 30.1310, case2 48.5445, case3 41.4943, case4 112.9503, case5 38.0017, case6 22.7096, case7 42.8853.
 - Result: very close to iter 7 but not better overall. Read-only cache hints do not provide a reliable win on this kernel.
+
+## Iteration 12
+
+- Change: tested `COLS_PER_WARP=32`, with each thread computing only one output column instead of two.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 33.0216, case2 56.9321, case3 46.8157, case4 122.2676, case5 48.1036, case6 30.4022, case7 46.0662.
+- Result: slower than iter 7. Reusing each A value across 64 columns is more valuable than reducing per-thread output/register work.
