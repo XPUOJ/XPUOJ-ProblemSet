@@ -48,3 +48,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 29.6545, case2 49.0086, case3 41.9314, case4 113.4264, case5 38.9944, case6 22.8970, case7 42.5578.
 - Result: new best overall. A larger block continues to improve occupancy/scheduling efficiency for this warp-row mapping without hurting the smaller cases.
+
+## Iteration 7
+
+- Change: increased `WARPS_PER_BLOCK` from 16 to 32, using the maximum 1024 threads per block.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 29.0188, case2 48.5079, case3 41.3999, case4 112.9782, case5 37.9597, case6 22.7165, case7 42.8612.
+- Result: new best overall by geometric mean. Cases 1-6 improved, while the very deep-K case7 regressed slightly.
