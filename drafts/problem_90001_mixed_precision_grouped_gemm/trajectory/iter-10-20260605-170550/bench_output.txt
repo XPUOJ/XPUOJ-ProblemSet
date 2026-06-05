@@ -1,0 +1,230 @@
+/home/lht/xpuoj/XPUOJ-ProblemSet/drafts/problem_90001_mixed_precision_grouped_gemm/solution/kernel.cu(93): error: no instance of overloaded function "__ldg" matches the argument list
+            argument types are: (const __nv_fp8_e4m3 *)
+                  a0 = static_cast<float>(__ldg(A + row * K + k));
+                                          ^
+/usr/local/cuda-13.0/include/cuda_bf16.hpp(1825): note #3326-D: function "__ldg(const __nv_bfloat16 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __nv_bfloat16 __ldg(const __nv_bfloat16 *const ptr)
+                                                          ^
+/usr/local/cuda-13.0/include/cuda_bf16.hpp(1819): note #3326-D: function "__ldg(const __nv_bfloat162 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __nv_bfloat162 __ldg(const __nv_bfloat162 *const ptr)
+                                                           ^
+/usr/local/cuda-13.0/include/cuda_fp16.hpp(1896): note #3326-D: function "__ldg(const __half *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __half __ldg(const __half *const ptr)
+                                                   ^
+/usr/local/cuda-13.0/include/cuda_fp16.hpp(1890): note #3326-D: function "__ldg(const __half2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __half2 __ldg(const __half2 *const ptr)
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(123): note #3326-D: function "__ldg(const double2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ double2 __ldg(const double2 *ptr) { }
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(122): note #3326-D: function "__ldg(const float4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ float4 __ldg(const float4 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(121): note #3326-D: function "__ldg(const float2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ float2 __ldg(const float2 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(120): note #3326-D: function "__ldg(const double *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ double __ldg(const double *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(119): note #3326-D: function "__ldg(const float *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ float __ldg(const float *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(117): note #3326-D: function "__ldg(const ulonglong2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ ulonglong2 __ldg(const ulonglong2 *ptr) { }
+                                                       ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(116): note #3326-D: function "__ldg(const uint4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uint4 __ldg(const uint4 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(115): note #3326-D: function "__ldg(const uint2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uint2 __ldg(const uint2 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(114): note #3326-D: function "__ldg(const ushort4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ ushort4 __ldg(const ushort4 *ptr) { }
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(113): note #3326-D: function "__ldg(const ushort2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ ushort2 __ldg(const ushort2 *ptr) { }
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(112): note #3326-D: function "__ldg(const uchar4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uchar4 __ldg(const uchar4 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(111): note #3326-D: function "__ldg(const uchar2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uchar2 __ldg(const uchar2 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(110): note #3326-D: function "__ldg(const unsigned long long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned long long __ldg(const unsigned long long *ptr) { }
+                                                               ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(109): note #3326-D: function "__ldg(const unsigned int *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned int __ldg(const unsigned int *ptr) { }
+                                                         ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(108): note #3326-D: function "__ldg(const unsigned short *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned short __ldg(const unsigned short *ptr) { }
+                                                           ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(107): note #3326-D: function "__ldg(const unsigned char *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned char __ldg(const unsigned char *ptr) { }
+                                                          ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(105): note #3326-D: function "__ldg(const longlong2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ longlong2 __ldg(const longlong2 *ptr) { }
+                                                      ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(104): note #3326-D: function "__ldg(const int4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ int4 __ldg(const int4 *ptr) { }
+                                                 ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(103): note #3326-D: function "__ldg(const int2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ int2 __ldg(const int2 *ptr) { }
+                                                 ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(102): note #3326-D: function "__ldg(const short4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ short4 __ldg(const short4 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(101): note #3326-D: function "__ldg(const short2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ short2 __ldg(const short2 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(100): note #3326-D: function "__ldg(const char4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ char4 __ldg(const char4 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(99): note #3326-D: function "__ldg(const char2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ char2 __ldg(const char2 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(98): note #3326-D: function "__ldg(const long long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ long long __ldg(const long long *ptr) { }
+                                                      ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(97): note #3326-D: function "__ldg(const int *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ int __ldg(const int *ptr) { }
+                                                ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(96): note #3326-D: function "__ldg(const short *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ short __ldg(const short *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(95): note #3326-D: function "__ldg(const signed char *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ signed char __ldg(const signed char *ptr) { }
+                                                        ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(94): note #3326-D: function "__ldg(const char *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ char __ldg(const char *ptr) { }
+                                                 ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(92): note #3326-D: function "__ldg(const unsigned long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned long __ldg(const unsigned long *ptr) { }
+                                                          ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(91): note #3326-D: function "__ldg(const long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ long __ldg(const long *ptr) { }
+                                                 ^
+
+/home/lht/xpuoj/XPUOJ-ProblemSet/drafts/problem_90001_mixed_precision_grouped_gemm/solution/kernel.cu(95): error: no instance of overloaded function "__ldg" matches the argument list
+            argument types are: (const __nv_fp8_e4m3 *)
+                      a1 = static_cast<float>(__ldg(A + row * K + k + 1));
+                                              ^
+/usr/local/cuda-13.0/include/cuda_bf16.hpp(1825): note #3326-D: function "__ldg(const __nv_bfloat16 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __nv_bfloat16 __ldg(const __nv_bfloat16 *const ptr)
+                                                          ^
+/usr/local/cuda-13.0/include/cuda_bf16.hpp(1819): note #3326-D: function "__ldg(const __nv_bfloat162 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __nv_bfloat162 __ldg(const __nv_bfloat162 *const ptr)
+                                                           ^
+/usr/local/cuda-13.0/include/cuda_fp16.hpp(1896): note #3326-D: function "__ldg(const __half *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __half __ldg(const __half *const ptr)
+                                                   ^
+/usr/local/cuda-13.0/include/cuda_fp16.hpp(1890): note #3326-D: function "__ldg(const __half2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ __half2 __ldg(const __half2 *const ptr)
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(123): note #3326-D: function "__ldg(const double2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ double2 __ldg(const double2 *ptr) { }
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(122): note #3326-D: function "__ldg(const float4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ float4 __ldg(const float4 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(121): note #3326-D: function "__ldg(const float2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ float2 __ldg(const float2 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(120): note #3326-D: function "__ldg(const double *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ double __ldg(const double *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(119): note #3326-D: function "__ldg(const float *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ float __ldg(const float *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(117): note #3326-D: function "__ldg(const ulonglong2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ ulonglong2 __ldg(const ulonglong2 *ptr) { }
+                                                       ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(116): note #3326-D: function "__ldg(const uint4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uint4 __ldg(const uint4 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(115): note #3326-D: function "__ldg(const uint2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uint2 __ldg(const uint2 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(114): note #3326-D: function "__ldg(const ushort4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ ushort4 __ldg(const ushort4 *ptr) { }
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(113): note #3326-D: function "__ldg(const ushort2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ ushort2 __ldg(const ushort2 *ptr) { }
+                                                    ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(112): note #3326-D: function "__ldg(const uchar4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uchar4 __ldg(const uchar4 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(111): note #3326-D: function "__ldg(const uchar2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ uchar2 __ldg(const uchar2 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(110): note #3326-D: function "__ldg(const unsigned long long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned long long __ldg(const unsigned long long *ptr) { }
+                                                               ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(109): note #3326-D: function "__ldg(const unsigned int *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned int __ldg(const unsigned int *ptr) { }
+                                                         ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(108): note #3326-D: function "__ldg(const unsigned short *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned short __ldg(const unsigned short *ptr) { }
+                                                           ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(107): note #3326-D: function "__ldg(const unsigned char *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned char __ldg(const unsigned char *ptr) { }
+                                                          ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(105): note #3326-D: function "__ldg(const longlong2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ longlong2 __ldg(const longlong2 *ptr) { }
+                                                      ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(104): note #3326-D: function "__ldg(const int4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ int4 __ldg(const int4 *ptr) { }
+                                                 ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(103): note #3326-D: function "__ldg(const int2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ int2 __ldg(const int2 *ptr) { }
+                                                 ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(102): note #3326-D: function "__ldg(const short4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ short4 __ldg(const short4 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(101): note #3326-D: function "__ldg(const short2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ short2 __ldg(const short2 *ptr) { }
+                                                   ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(100): note #3326-D: function "__ldg(const char4 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ char4 __ldg(const char4 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(99): note #3326-D: function "__ldg(const char2 *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ char2 __ldg(const char2 *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(98): note #3326-D: function "__ldg(const long long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ long long __ldg(const long long *ptr) { }
+                                                      ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(97): note #3326-D: function "__ldg(const int *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ int __ldg(const int *ptr) { }
+                                                ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(96): note #3326-D: function "__ldg(const short *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ short __ldg(const short *ptr) { }
+                                                  ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(95): note #3326-D: function "__ldg(const signed char *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ signed char __ldg(const signed char *ptr) { }
+                                                        ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(94): note #3326-D: function "__ldg(const char *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ char __ldg(const char *ptr) { }
+                                                 ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(92): note #3326-D: function "__ldg(const unsigned long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ unsigned long __ldg(const unsigned long *ptr) { }
+                                                          ^
+/usr/local/cuda-13.0/include/sm_32_intrinsics.h(91): note #3326-D: function "__ldg(const long *)" does not match because argument #1 does not match parameter
+  static __attribute__((device)) __inline__ long __ldg(const long *ptr) { }
+                                                 ^
+
+2 errors detected in the compilation of "/home/lht/xpuoj/XPUOJ-ProblemSet/drafts/problem_90001_mixed_precision_grouped_gemm/solution/kernel.cu".
+Traceback (most recent call last):
+  File "/home/lht/xpuoj/XPUOJ-ProblemSet/tools/local_cuda_runner.py", line 299, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/lht/xpuoj/XPUOJ-ProblemSet/tools/local_cuda_runner.py", line 273, in main
+    compile_cuda(source, out_so, args.arch, args.extra_nvcc)
+  File "/home/lht/xpuoj/XPUOJ-ProblemSet/tools/local_cuda_runner.py", line 138, in compile_cuda
+    subprocess.run(cmd, check=True)
+  File "/home/lht/miniconda3/envs/matris311/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/local/cuda-13.0/bin/nvcc', '-O3', '--shared', '-Xcompiler', '-fPIC', '-std=c++17', '--cudart=shared', '-arch=sm_80', '-I/usr/local/cuda-13.0/include', '-I/usr/local/cuda-13.0/targets/x86_64-linux/include', '/home/lht/xpuoj/XPUOJ-ProblemSet/drafts/problem_90001_mixed_precision_grouped_gemm/solution/kernel.cu', '-o', '/home/lht/xpuoj/XPUOJ-ProblemSet/.local_build/problem_90001_mixed_precision_grouped_gemm/kernel_1957b6ed2a.so', '-L/usr/local/cuda-13.0/lib64', '-L/usr/local/cuda-13.0/targets/x86_64-linux/lib', '-Xlinker', '-rpath,/usr/local/cuda-13.0/lib64', '-Xlinker', '-rpath,/usr/local/cuda-13.0/targets/x86_64-linux/lib']' returned non-zero exit status 2.
+ERROR conda.cli.main_run:execute(142): `conda run python tools/local_cuda_runner.py drafts/problem_90001_mixed_precision_grouped_gemm drafts/problem_90001_mixed_precision_grouped_gemm/solution/kernel.cu --case all --gpu 0 --keep-going` failed. (See above for error)
+[env] torch=2.8.0+cu128 cuda=12.8
+[env] device=0 NVIDIA A800-SXM4-80GB
+[build] /usr/local/cuda-13.0/bin/nvcc -O3 --shared -Xcompiler -fPIC -std=c++17 --cudart=shared -arch=sm_80 -I/usr/local/cuda-13.0/include -I/usr/local/cuda-13.0/targets/x86_64-linux/include /home/lht/xpuoj/XPUOJ-ProblemSet/drafts/problem_90001_mixed_precision_grouped_gemm/solution/kernel.cu -o /home/lht/xpuoj/XPUOJ-ProblemSet/.local_build/problem_90001_mixed_precision_grouped_gemm/kernel_1957b6ed2a.so -L/usr/local/cuda-13.0/lib64 -L/usr/local/cuda-13.0/targets/x86_64-linux/lib -Xlinker -rpath,/usr/local/cuda-13.0/lib64 -Xlinker -rpath,/usr/local/cuda-13.0/targets/x86_64-linux/lib

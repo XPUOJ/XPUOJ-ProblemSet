@@ -76,3 +76,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 28.8208, case2 49.0392, case3 42.2279, case4 253.8696, case5 36.7183, case6 21.8295, case7 42.9360.
 - Result: rejected. Some cases improved, but case4 regressed badly, so the mixed/address calculation change is not robust as-is.
+
+## Iteration 10
+
+- Change: restored the iter-7 best version and added `__ldg` read-only load hints for A, scales, B, and m_indices.
+- Correctness: not reached.
+- Runtime ms: not available.
+- Result: compile failed because CUDA does not provide an `__ldg` overload for `const __nv_fp8_e4m3*`. Need to keep A as a normal FP8 load or load through a supported byte type.
