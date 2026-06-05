@@ -15,28 +15,35 @@ try:
     GROUP_K = 64
 
     # Contest-style ranking cases.
-    # (M_total, K, N, num_groups, distribution, padding_ratio_permille, seed, warmup, iters)
+    # (
+    #   M_total, K, N, num_groups, distribution,
+    #   padding_ratio_permille, A_zero_scale_permille, B_zero_scale_permille,
+    #   seed, warmup, iters
+    # )
     TESTCASES = [
-        # Hot expert dominates: tests group-aware scheduling and B reuse.
-        (8192, 1024, 1024, 32, "long_tail", 100, 20260201, 3, 16),
+        # Main path: K is a multiple of 128 and a hot expert dominates.
+        (8192, 1024, 1024, 32, "long_tail", 100, 60, 60, 20260201, 3, 16),
 
         # Deep K + skinny N: unpack/dequant cost is high and many groups are small.
-        (16384, 2048, 512, 64, "many_small", 250, 20260202, 2, 10),
+        (16384, 2048, 512, 64, "many_small", 250, 50, 50, 20260202, 2, 10),
 
         # Wide N: stresses output tiling, B bandwidth, and sparse group skipping.
-        (8192, 768, 2048, 48, "sparse_groups", 150, 20260203, 2, 10),
+        (8192, 768, 2048, 48, "sparse_groups", 150, 30, 40, 20260203, 2, 10),
 
-        # Large balanced case: measures raw GEMM throughput without a single hot group.
-        (12288, 1536, 1536, 96, "balanced", 80, 20260205, 2, 4),
+        # Counter case: large balanced GEMM, low padding, no zero scales.
+        (12288, 1536, 1536, 96, "balanced", 20, 0, 0, 20260205, 2, 4),
 
-        # Boundary dimensions: K/N are intentionally not friendly to every tile.
-        (14336, 896, 1408, 96, "sparse_groups", 220, 20260301, 2, 8),
+        # Counter case: K is not a multiple of 128, so no-tail-only kernels must fall back.
+        (14336, 960, 1408, 96, "sparse_groups", 220, 20, 20, 20260301, 2, 8),
 
         # Many rows + many groups + high padding: rewards padding skip and launch balance.
-        (24576, 640, 768, 128, "long_tail", 350, 20260302, 2, 8),
+        (24576, 640, 768, 128, "long_tail", 350, 40, 40, 20260302, 2, 8),
 
         # Very deep K: emphasizes scale reuse, INT4 unpack fusion, and K-loop efficiency.
-        (6144, 3072, 640, 64, "many_small", 120, 20260303, 2, 6),
+        (6144, 3072, 640, 64, "many_small", 120, 30, 30, 20260303, 2, 6),
+
+        # Counter case: high arithmetic density with almost no padding and no zero scales.
+        (10240, 1152, 1792, 64, "balanced", 0, 0, 0, 20260304, 2, 6),
     ]
 
     CURRENT_CASE = None
@@ -57,7 +64,7 @@ try:
     def getTestCaseSize():
         testcase_id = _get_testcase_id()
         global CURRENT_CASE
-        M_total, K, N, num_groups, dist, padding_pm, seed, warmup, iters = TESTCASES[testcase_id - 1]
+        M_total, K, N, num_groups, dist, padding_pm, A_zero_pm, B_zero_pm, seed, warmup, iters = TESTCASES[testcase_id - 1]
         CURRENT_CASE = TESTCASES[testcase_id - 1]
         A_k_blocks = (K + SCALE_BLOCK_A - 1) // SCALE_BLOCK_A
         B_k_blocks = (K + GROUP_K - 1) // GROUP_K
@@ -140,9 +147,16 @@ try:
         m_indices[padding_mask] = -1
         return m_indices.contiguous()
 
+    def _apply_zero_scale(scale: torch.Tensor, zero_pm: int, gen: torch.Generator) -> torch.Tensor:
+        if zero_pm <= 0:
+            return scale
+        zero_mask = torch.rand(scale.shape, device=scale.device, generator=gen) < (zero_pm / 1000.0)
+        scale[zero_mask] = 0.0
+        return scale
+
     def genTestCase(testcase_sizes, device: str = "cuda") -> List[KernelArg]:
         del testcase_sizes
-        M_total, K, N, num_groups, distribution, padding_pm, seed, _, _ = CURRENT_CASE
+        M_total, K, N, num_groups, distribution, padding_pm, A_zero_pm, B_zero_pm, seed, _, _ = CURRENT_CASE
         gen = torch.Generator(device=device)
         gen.manual_seed(seed)
 
@@ -152,14 +166,14 @@ try:
 
         A_k_blocks = (K + SCALE_BLOCK_A - 1) // SCALE_BLOCK_A
         A_scale = (torch.rand(M_total, A_k_blocks, device=device, dtype=torch.float32, generator=gen) * 1.8 + 0.1).contiguous()
-        A_scale.view(-1)[::5] = 0.0
+        A_scale = _apply_zero_scale(A_scale, A_zero_pm, gen)
 
         B_q = torch.randint(-8, 8, (num_groups, N, K), device=device, dtype=torch.int8, generator=gen).contiguous()
         B_packed = _pack_int4(B_q)
 
         B_k_blocks = (K + GROUP_K - 1) // GROUP_K
         B_scale = (torch.rand(num_groups, N, B_k_blocks, device=device, dtype=torch.float32, generator=gen) * 0.9 + 0.05).contiguous()
-        B_scale.view(-1)[::7] = 0.0
+        B_scale = _apply_zero_scale(B_scale, B_zero_pm, gen)
 
         m_indices = _make_group_indices(M_total, num_groups, distribution, padding_pm, seed, device)
         D = torch.empty(M_total, N, device=device, dtype=torch.bfloat16)

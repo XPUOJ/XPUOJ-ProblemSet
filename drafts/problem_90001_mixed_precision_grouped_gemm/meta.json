@@ -8,8 +8,8 @@
   ],
   "samples": [
     {
-      "inputData": "",
-      "outputData": ""
+      "inputData": "1\n",
+      "outputData": "1\n"
     }
   ],
   "problemTagIds": []
