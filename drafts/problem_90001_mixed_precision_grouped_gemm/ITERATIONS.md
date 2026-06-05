@@ -104,3 +104,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 28.7618, case2 48.5171, case3 41.6291, case4 112.6595, case5 37.8021, case6 22.6257, case7 42.9486.
 - Result: slight new best candidate by geometric mean. The memset cost is offset by removing scattered padding zero stores, especially on cases with nontrivial padding.
+
+## Iteration 14
+
+- Change: kept the iter-13 memset/padding strategy, but changed the K loop to load `A_scale` once per 128-wide A scale block and process the two 64-wide B scale blocks inside it.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 29.0660, case2 48.3745, case3 41.4074, case4 112.4470, case5 37.4414, case6 22.3569, case7 42.7513.
+- Result: new best overall. Reusing `A_scale` across two `group_k=64` chunks improves most cases with only a small case1 regression.
