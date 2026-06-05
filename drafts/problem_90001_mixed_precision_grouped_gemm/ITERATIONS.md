@@ -83,3 +83,10 @@
 - Correctness: not reached.
 - Runtime ms: not available.
 - Result: compile failed because CUDA does not provide an `__ldg` overload for `const __nv_fp8_e4m3*`. Need to keep A as a normal FP8 load or load through a supported byte type.
+
+## Iteration 11
+
+- Change: restored the iter-7 best version and added `__ldg` only for supported read-only types: `m_indices`, `A_scale`, `B_scale`, and `B_packed`; FP8 `A` remains a normal load.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 30.1310, case2 48.5445, case3 41.4943, case4 112.9503, case5 38.0017, case6 22.7096, case7 42.8853.
+- Result: very close to iter 7 but not better overall. Read-only cache hints do not provide a reliable win on this kernel.
