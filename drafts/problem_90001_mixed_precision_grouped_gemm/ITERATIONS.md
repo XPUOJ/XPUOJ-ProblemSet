@@ -20,3 +20,10 @@
 - Correctness: not reached.
 - Runtime ms: not available.
 - Result: compile failed because the CUDA device code used `min<int64_t>(...)` in a form nvcc rejected. Need to fix the chunk-size expression before evaluating the idea.
+
+## Iteration 3
+
+- Change: fixed the shared-A row kernel compile issue and corrected per-warp group broadcast.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 33.7872, case2 59.9280, case3 49.6861, case4 210.3798, case5 64.9992, case6 32.6787, case7 49.4587.
+- Result: slower than baseline. The shared-memory staging and `__syncthreads()` overhead outweighed reduced A loads.
