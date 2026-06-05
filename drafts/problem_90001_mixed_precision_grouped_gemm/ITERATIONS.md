@@ -125,3 +125,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 21.6627, case2 34.2306, case3 28.8291, case4 75.0100, case5 25.1227, case6 14.7636, case7 30.2353.
 - Result: new best overall. The no-tail full-128 path substantially reduces loop overhead on the tested large cases.
+
+## Iteration 17
+
+- Change: attempted to convert only the `K%128==0` fast path to 32-bit indexing.
+- Correctness: not reached.
+- Runtime ms: not available.
+- Result: compile failed because the patch referenced `K_i`, `N_i`, and `num_groups_i` before defining them in the fast-kernel scope. Need to fix the mechanical scoping error before evaluating this idea.
