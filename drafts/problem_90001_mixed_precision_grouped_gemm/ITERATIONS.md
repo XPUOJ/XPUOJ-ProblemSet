@@ -139,3 +139,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 21.2237, case2 34.3207, case3 28.8311, case4 75.3667, case5 25.1581, case6 15.0587, case7 30.2553.
 - Result: rejected. It improves case1, but regresses most other cases versus iter 16. The original 64-bit fast path remains better overall.
+
+## Iteration 19
+
+- Change: restored iter 16 and removed the full-output `cudaMemsetAsync`; padding rows now write zero only for the columns owned by each warp tile.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 21.6891, case2 34.1550, case3 28.7596, case4 74.9517, case5 24.8965, case6 14.6435, case7 30.0798.
+- Result: new best overall. Avoiding the full output clear is better once the main kernel is fast; the scattered padding stores are cheaper than clearing every output element.
