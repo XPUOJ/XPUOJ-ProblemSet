@@ -41,3 +41,10 @@
 - Correctness: PASS on all 7 cases.
 - Runtime ms: case1 30.9379, case2 49.9755, case3 42.4748, case4 123.1606, case5 41.0047, case6 24.7258, case7 43.7798.
 - Result: new best overall. Larger blocks improved throughput on the large/wide cases while keeping small regressions on case1/case2 modest.
+
+## Iteration 6
+
+- Change: increased `WARPS_PER_BLOCK` from 8 to 16.
+- Correctness: PASS on all 7 cases.
+- Runtime ms: case1 29.6545, case2 49.0086, case3 41.9314, case4 113.4264, case5 38.9944, case6 22.8970, case7 42.5578.
+- Result: new best overall. A larger block continues to improve occupancy/scheduling efficiency for this warp-row mapping without hurting the smaller cases.
