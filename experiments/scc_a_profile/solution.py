@@ -1,0 +1,116 @@
+import triton
+import triton.language as tl
+
+
+@triton.jit
+def _swiglu_kernel(
+    x,
+    w_gate,
+    w_up,
+    b_gate,
+    b_up,
+    y,
+    M: tl.constexpr,
+    K: tl.constexpr,
+    N: tl.constexpr,
+    BLOCK_M: tl.constexpr,
+    BLOCK_N: tl.constexpr,
+    BLOCK_K: tl.constexpr,
+):
+    pid_m = tl.program_id(0)
+    pid_n = tl.program_id(1)
+
+    offs_m = pid_m * BLOCK_M + tl.arange(0, BLOCK_M)
+    offs_n = pid_n * BLOCK_N + tl.arange(0, BLOCK_N)
+    offs_k = tl.arange(0, BLOCK_K)
+
+    acc_gate = tl.zeros((BLOCK_M, BLOCK_N), tl.float32)
+    acc_up = tl.zeros((BLOCK_M, BLOCK_N), tl.float32)
+
+    for k0 in range(0, K, BLOCK_K):
+        k = k0 + offs_k
+        x_tile = tl.load(
+            x + offs_m[:, None] * K + k[None, :],
+            mask=(offs_m[:, None] < M) & (k[None, :] < K),
+            other=0.0,
+        )
+        wg_tile = tl.load(
+            w_gate + k[:, None] * N + offs_n[None, :],
+            mask=(k[:, None] < K) & (offs_n[None, :] < N),
+            other=0.0,
+        )
+        wu_tile = tl.load(
+            w_up + k[:, None] * N + offs_n[None, :],
+            mask=(k[:, None] < K) & (offs_n[None, :] < N),
+            other=0.0,
+        )
+        acc_gate += tl.dot(x_tile, wg_tile)
+        acc_up += tl.dot(x_tile, wu_tile)
+
+    acc_gate += tl.load(b_gate + offs_n, mask=offs_n < N, other=0.0)[None, :]
+    acc_up += tl.load(b_up + offs_n, mask=offs_n < N, other=0.0)[None, :]
+
+    out = (acc_gate / (1.0 + tl.exp(-acc_gate))) * acc_up
+    tl.store(
+        y + offs_m[:, None] * N + offs_n[None, :],
+        out,
+        mask=(offs_m[:, None] < M) & (offs_n[None, :] < N),
+    )
+
+
+def run_kernel(x, w_gate, w_up, b_gate, b_up, y, M: int, K: int, N: int):
+    block_m = 64
+    block_n = 128
+    block_k = 32 if (M == 4097 and K == 3073 and N == 2305) else 64
+    grid = (triton.cdiv(M, block_m), triton.cdiv(N, block_n))
+    _swiglu_kernel[grid](
+        x,
+        w_gate,
+        w_up,
+        b_gate,
+        b_up,
+        y,
+        M,
+        K,
+        N,
+        BLOCK_M=block_m,
+        BLOCK_N=block_n,
+        BLOCK_K=block_k,
+        num_warps=4,
+        num_stages=3,
+    )
+
+
+def run_kernel_config(
+    x,
+    w_gate,
+    w_up,
+    b_gate,
+    b_up,
+    y,
+    M: int,
+    K: int,
+    N: int,
+    block_m: int,
+    block_n: int,
+    block_k: int,
+    num_warps: int = 4,
+    num_stages: int = 3,
+):
+    grid = (triton.cdiv(M, block_m), triton.cdiv(N, block_n))
+    _swiglu_kernel[grid](
+        x,
+        w_gate,
+        w_up,
+        b_gate,
+        b_up,
+        y,
+        M,
+        K,
+        N,
+        BLOCK_M=block_m,
+        BLOCK_N=block_n,
+        BLOCK_K=block_k,
+        num_warps=num_warps,
+        num_stages=num_stages,
+    )
