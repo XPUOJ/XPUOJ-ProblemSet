@@ -46,3 +46,41 @@ Next directions:
 - Sweep per-case configs around the new winners instead of using only two dispatch configs.
 - Focus especially on case 4 configs with `BK=32`.
 - Explore larger `BN`/alternative `BM` for regular cases while watching register pressure.
+
+## Iteration 2
+
+Label: `iter-2`
+
+Change:
+
+- Expanded the sweep script to test `BN=256`, `128x128`, and a case-4-specific `BK=16/32` search set.
+- No production dispatch change was made because the sweep did not find a better stable configuration.
+
+Benchmark:
+
+- Slurm jobs: `79723` through `79729`
+- Node: `g07`
+- GPU: `NVIDIA A800 80GB PCIe`
+
+Best sweep results:
+
+| Case | Best mean ms | Best TFLOPS | Best config |
+|---:|---:|---:|---|
+| 1 | 0.0842 | 102.19 | `BM=64, BN=128, BK=64, warps=4, stages=3` |
+| 2 | 0.5444 | 189.44 | `BM=64, BN=128, BK=64, warps=4, stages=3` |
+| 3 | 1.5515 | 177.26 | `BM=64, BN=128, BK=64, warps=4, stages=3` |
+| 4 | 1.7399 | 66.76 | `BM=64, BN=128, BK=32, warps=4, stages=3` |
+| 5 | 1.6251 | 169.31 | `BM=64, BN=128, BK=64, warps=4, stages=3` |
+| 6 | 1.0789 | 215.03 | `BM=64, BN=128, BK=64, warps=4, stages=3` |
+
+Analysis:
+
+- The existing iter-1 dispatch remains the best tested direction.
+- `BN=256` and some `128x128` configs often regress badly, especially with masked tails.
+- Non-power-of-two tile sizes such as `BN=96/160/192` fail Triton compilation for this dot kernel shape.
+- Case 4 remains best with `BM=64, BN=128, BK=32`.
+
+Next directions:
+
+- Move from tile sweep to implementation-level changes: separate fast full-tile path from masked edge path, or specialize per-shape kernels.
+- Consider a two-kernel / two-matmul strategy only if it can outperform the fused dual-accumulator kernel for case 4.

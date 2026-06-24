@@ -94,3 +94,14 @@ CUDA event timing and tile sweeps were still enough to identify the first hotspo
    - fast path without masks for divisible full tiles
    - masked fallback only for edge tiles
 6. Use per-case stable full measurements as candidate hardware-limit anchors after the optimized implementation is finalized.
+
+## Iteration 2 Sweep Update
+
+An expanded sweep tested `BN=256`, `128x128`, and case-4-specific `BK=16/32` configs. No better dispatch was found:
+
+- Cases 1, 2, 3, 5, 6 still prefer `BLOCK_M=64, BLOCK_N=128, BLOCK_K=64`.
+- Case 4 still prefers `BLOCK_M=64, BLOCK_N=128, BLOCK_K=32`.
+- `BN=256` and some `128x128` configurations can regress severely.
+- Non-power-of-two tile sizes such as `BN=96/160/192` failed Triton compilation in this kernel.
+
+The next promising direction is not more coarse tile sweep, but specialized implementation work: separate full-tile fast paths from masked edge paths, or specialize per known shape.
