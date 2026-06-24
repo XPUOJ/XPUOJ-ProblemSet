@@ -6,6 +6,8 @@ def getNumOfTestcases() -> int:
 
 
 try:
+    import ctypes
+    from pathlib import Path
     from typing import List, Tuple, Union
     import sys
     import torch
@@ -13,6 +15,8 @@ try:
     KernelArg = Union[torch.Tensor, int, float]
     SCALE_BLOCK_A = 128
     GROUP_K = 64
+    _BASELINE_SO_PATH = Path(__file__).resolve().parent / "baseline_lib" / "libscc_c_baseline.so"
+    _BASELINE_LIB = None
 
     # Contest-style ranking cases.
     # (
@@ -183,7 +187,7 @@ try:
     def _expand_scale(scale: torch.Tensor, block: int, K: int) -> torch.Tensor:
         return scale.repeat_interleave(block, dim=-1)[..., :K].contiguous()
 
-    def baseline(
+    def _torch_reference(
         A_fp8,
         A_scale,
         B_packed,
@@ -212,6 +216,62 @@ try:
                 continue
             out = A_real.index_select(0, rows) @ B_real[g].transpose(0, 1)
             D.index_copy_(0, rows, out.to(torch.bfloat16))
+        return [A_fp8, A_scale, B_packed, B_scale, m_indices, D, M_total, K, N, num_groups, group_k]
+
+    def _load_cuda_baseline():
+        global _BASELINE_LIB
+        if _BASELINE_LIB is not None:
+            return _BASELINE_LIB
+
+        if not _BASELINE_SO_PATH.exists():
+            raise RuntimeError(
+                "SCC C starter CUDA baseline shared library is missing. "
+                f"Build it first with: bash {_BASELINE_SO_PATH.parent / 'build.sh'}"
+            )
+
+        lib = ctypes.CDLL(str(_BASELINE_SO_PATH))
+        lib.run_kernel.argtypes = [
+            ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p,
+            ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p,
+            ctypes.c_int64, ctypes.c_int64, ctypes.c_int64,
+            ctypes.c_int64, ctypes.c_int64,
+        ]
+        lib.run_kernel.restype = None
+        _BASELINE_LIB = lib
+        return lib
+
+    def baseline(
+        A_fp8,
+        A_scale,
+        B_packed,
+        B_scale,
+        m_indices,
+        D,
+        M_total,
+        K,
+        N,
+        num_groups,
+        group_k,
+    ) -> List[KernelArg]:
+        assert group_k == GROUP_K
+        assert A_fp8.shape == (M_total, K)
+        assert B_packed.shape == (num_groups, N, (K + 1) // 2)
+        assert D.shape == (M_total, N)
+
+        lib = _load_cuda_baseline()
+        lib.run_kernel(
+            ctypes.c_void_p(A_fp8.data_ptr()),
+            ctypes.c_void_p(A_scale.data_ptr()),
+            ctypes.c_void_p(B_packed.data_ptr()),
+            ctypes.c_void_p(B_scale.data_ptr()),
+            ctypes.c_void_p(m_indices.data_ptr()),
+            ctypes.c_void_p(D.data_ptr()),
+            ctypes.c_int64(M_total),
+            ctypes.c_int64(K),
+            ctypes.c_int64(N),
+            ctypes.c_int64(num_groups),
+            ctypes.c_int64(group_k),
+        )
         return [A_fp8, A_scale, B_packed, B_scale, m_indices, D, M_total, K, N, num_groups, group_k]
 
     def check(

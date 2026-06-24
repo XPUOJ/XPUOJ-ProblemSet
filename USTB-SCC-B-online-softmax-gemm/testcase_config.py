@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import ctypes
+from pathlib import Path
 from typing import List, Tuple, Union
 import torch
 
 KernelArg = Union[torch.Tensor, int, float]
+_BASELINE_SO_PATH = Path(__file__).resolve().parent / "baseline_lib" / "libscc_b_baseline.so"
+_BASELINE_LIB = None
 
 # (B, H, S, D, warmup, iters)
 # 所有测试点均在单张 A800 VRAM 限制内
@@ -78,7 +82,7 @@ def genTestCase(testcase_sizes, device: str = "cuda") -> List[KernelArg]:
     return [Q, K, V, mask, B, H, S, D, alpha, O]
 
 
-def baseline(*args):
+def _torch_reference(*args):
     """PyTorch 参考实现：O = softmax(α · Q @ K^T + mask) @ V"""
     Q, K, V, mask, B, H, S, D, alpha, O = args
 
@@ -101,6 +105,49 @@ def baseline(*args):
     O_t = torch.matmul(P, V_t)
     O.copy_(O_t.to(torch.bfloat16))
 
+    return [Q, K, V, mask, B, H, S, D, alpha, O]
+
+
+def _load_cuda_baseline():
+    global _BASELINE_LIB
+    if _BASELINE_LIB is not None:
+        return _BASELINE_LIB
+
+    if not _BASELINE_SO_PATH.exists():
+        raise RuntimeError(
+            "SCC B starter CUDA baseline shared library is missing. "
+            f"Build it first with: bash {_BASELINE_SO_PATH.parent / 'build.sh'}"
+        )
+
+    lib = ctypes.CDLL(str(_BASELINE_SO_PATH))
+    lib.run_kernel.argtypes = [
+        ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p,
+        ctypes.c_int64, ctypes.c_int64, ctypes.c_int64, ctypes.c_int64,
+        ctypes.c_float,
+        ctypes.c_void_p,
+    ]
+    lib.run_kernel.restype = None
+    _BASELINE_LIB = lib
+    return lib
+
+
+def baseline(*args):
+    """Starter CUDA baseline loaded from baseline_lib/libscc_b_baseline.so."""
+    Q, K, V, mask, B, H, S, D, alpha, O = args
+    lib = _load_cuda_baseline()
+    mask_ptr = 0 if mask is None else mask.data_ptr()
+    lib.run_kernel(
+        ctypes.c_void_p(Q.data_ptr()),
+        ctypes.c_void_p(K.data_ptr()),
+        ctypes.c_void_p(V.data_ptr()),
+        ctypes.c_void_p(mask_ptr),
+        ctypes.c_int64(B),
+        ctypes.c_int64(H),
+        ctypes.c_int64(S),
+        ctypes.c_int64(D),
+        ctypes.c_float(alpha),
+        ctypes.c_void_p(O.data_ptr()),
+    )
     return [Q, K, V, mask, B, H, S, D, alpha, O]
 
 

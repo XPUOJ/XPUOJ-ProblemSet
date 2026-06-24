@@ -9,6 +9,13 @@ except ImportError:
     torch = None
     F = None
 
+try:
+    import triton
+    import triton.language as tl
+except ImportError:
+    triton = None
+    tl = None
+
 KernelArg = Union["torch.Tensor", int, float]
 
 # Each testcase is (M, K, N, warmup, iters).
@@ -117,9 +124,9 @@ def _restore_matmul_precision(state) -> None:
         setattr(matmul_backend, name, old_value)
 
 
-def baseline(x, w_gate, w_up, b_gate, b_up, y, M, K, N):
+def _torch_reference(x, w_gate, w_up, b_gate, b_up, y, M, K, N):
     if torch is None or F is None:
-        raise RuntimeError("torch is required to run baseline")
+        raise RuntimeError("torch is required to run the PyTorch reference")
 
     precision_state = _set_ieee_matmul_precision(x.is_cuda)
     try:
@@ -133,6 +140,94 @@ def baseline(x, w_gate, w_up, b_gate, b_up, y, M, K, N):
         _restore_matmul_precision(precision_state)
 
     return [x, w_gate, w_up, b_gate, b_up, y, M, K, N]
+
+
+if tl is not None:
+    @triton.jit
+    def _swiglu_kernel(
+        x,
+        w_gate,
+        w_up,
+        b_gate,
+        b_up,
+        y,
+        M: tl.constexpr,
+        K: tl.constexpr,
+        N: tl.constexpr,
+        BLOCK_M: tl.constexpr,
+        BLOCK_N: tl.constexpr,
+        BLOCK_K: tl.constexpr,
+    ):
+        pid_m = tl.program_id(0)
+        pid_n = tl.program_id(1)
+
+        offs_m = pid_m * BLOCK_M + tl.arange(0, BLOCK_M)
+        offs_n = pid_n * BLOCK_N + tl.arange(0, BLOCK_N)
+        offs_k = tl.arange(0, BLOCK_K)
+
+        acc_gate = tl.zeros((BLOCK_M, BLOCK_N), tl.float32)
+        acc_up = tl.zeros((BLOCK_M, BLOCK_N), tl.float32)
+
+        for k0 in range(0, K, BLOCK_K):
+            k = k0 + offs_k
+            x_tile = tl.load(
+                x + offs_m[:, None] * K + k[None, :],
+                mask=(offs_m[:, None] < M) & (k[None, :] < K),
+                other=0.0,
+            )
+            wg_tile = tl.load(
+                w_gate + k[:, None] * N + offs_n[None, :],
+                mask=(k[:, None] < K) & (offs_n[None, :] < N),
+                other=0.0,
+            )
+            wu_tile = tl.load(
+                w_up + k[:, None] * N + offs_n[None, :],
+                mask=(k[:, None] < K) & (offs_n[None, :] < N),
+                other=0.0,
+            )
+            acc_gate += tl.dot(x_tile, wg_tile, out_dtype=tl.float32)
+            acc_up += tl.dot(x_tile, wu_tile, out_dtype=tl.float32)
+
+        acc_gate += tl.load(b_gate + offs_n, mask=offs_n < N, other=0.0)[None, :]
+        acc_up += tl.load(b_up + offs_n, mask=offs_n < N, other=0.0)[None, :]
+
+        out = (acc_gate / (1.0 + tl.exp(-acc_gate))) * acc_up
+        tl.store(
+            y + offs_m[:, None] * N + offs_n[None, :],
+            out,
+            mask=(offs_m[:, None] < M) & (offs_n[None, :] < N),
+        )
+else:
+    _swiglu_kernel = None
+
+
+def _starter_triton_baseline(x, w_gate, w_up, b_gate, b_up, y, M: int, K: int, N: int):
+    if triton is None or tl is None or _swiglu_kernel is None:
+        raise RuntimeError("triton is required to run the starter-code baseline")
+
+    block_m = 16
+    block_n = 16
+    block_k = 32
+    grid = (triton.cdiv(M, block_m), triton.cdiv(N, block_n))
+    _swiglu_kernel[grid](
+        x,
+        w_gate,
+        w_up,
+        b_gate,
+        b_up,
+        y,
+        M,
+        K,
+        N,
+        BLOCK_M=block_m,
+        BLOCK_N=block_n,
+        BLOCK_K=block_k,
+    )
+    return [x, w_gate, w_up, b_gate, b_up, y, M, K, N]
+
+
+def baseline(x, w_gate, w_up, b_gate, b_up, y, M, K, N):
+    return _starter_triton_baseline(x, w_gate, w_up, b_gate, b_up, y, M, K, N)
 
 
 def _check_same_tensor(name: str, actual: "torch.Tensor", expected: "torch.Tensor") -> bool:
